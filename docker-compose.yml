@@ -1,0 +1,47 @@
+version: '3'
+services:
+  collection:
+    build: ./collection-service
+    container_name: collection
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+      - authentication
+  results:
+    build: ./results-service
+    container_name: results
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mongodb
+      - authentication
+  analytics:
+    build: ./analytics-service
+    container_name: analytics
+    expose:
+      - "8080"
+    depends_on:
+      - mysqldb
+      - mongodb
+  authentication:
+    build: ./authentication-service
+    container_name: authentication
+    expose:
+      - "8080"
+  mysqldb:
+    image: mysql
+    container_name: mysqldb
+    expose:
+      - "3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'data'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'root'
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    expose:
+      - "27017"
